@@ -27,6 +27,9 @@ def decode_segmap(label_mask, dataset, plot=False):
     elif dataset == 'cityscapes':
         n_classes = 19
         label_colours = get_cityscapes_labels()
+    elif dataset == 'miccai':
+        n_classes = 11
+        label_colours = get_miccai_labels()
     else:
         raise NotImplementedError
 
@@ -99,3 +102,9 @@ def get_pascal_labels():
                        [64, 0, 128], [192, 0, 128], [64, 128, 128], [192, 128, 128],
                        [0, 64, 0], [128, 64, 0], [0, 192, 0], [128, 192, 0],
                        [0, 64, 128]])
+
+
+def get_miccai_labels():
+    return np.asarray([[0, 0, 0], [0, 255, 0], [0, 255, 255], [125, 255, 12],
+                       [255, 55, 0], [24, 55, 125], [187, 155, 25], [0, 255, 125],
+                       [255, 255, 125], [123, 15, 175], [124, 155, 5], [12, 255, 141]])
