@@ -12,6 +12,10 @@ class MICCAISegmentation(Dataset):
     PascalVoc dataset
     """
     NUM_CLASSES = 11
+    # this is magic
+    CLASSES = [0, 149, 178, 188, 108, 53, 149, 163, 240, 65, 128]
+    MAPPING = dict(zip(CLASSES, range(NUM_CLASSES)))
+
     def __init__(self,
                  args,
                  base_dir=Path.db_root_dir('miccai'),
@@ -70,12 +74,17 @@ class MICCAISegmentation(Dataset):
 
     def _make_img_gt_point_pair(self, index):
         _img = Image.open(self.images[index]).convert('RGB')
-        _temp = Image.open(self.categories[index]).convert('P')
-        # print('_temp', _temp)
+        _temp = np.array(Image.open(self.categories[index]).convert('L'))
 
-        _target = _temp
-
+        _target = Image.fromarray(self.encode_segmap(_temp))
         return _img, _target
+    
+    def encode_segmap(self, grey):
+        # Put all void classes to zero
+        mask = np.zeros(grey.shape, dtype=np.uint8)
+        for _class in self.CLASSES:
+            mask[grey == _class] = self.MAPPING[_class]
+        return mask
 
     def transform_tr(self, sample):
         composed_transforms = transforms.Compose([
